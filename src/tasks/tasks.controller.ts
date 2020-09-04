@@ -36,10 +36,10 @@ export class TasksController {
   //   }
   // }
   //
-  // @Delete('/:id')
-  // deleteTaskById(@Param('id') id: string): void {
-  //   return this.tasksService.deleteTaskById(id);
-  // }
+  @Delete('/:id')
+  async deleteTaskById(@Param('id', ParseIntPipe) id: string): Promise<void> {
+    await this.tasksService.deleteTaskById(id);
+  }
 
   @Post()
   @UsePipes(ValidationPipe)
