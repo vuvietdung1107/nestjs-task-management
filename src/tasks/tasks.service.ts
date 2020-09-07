@@ -3,19 +3,16 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { TaskStatus } from './task-status.enum';
 import { Task } from './task.entity';
 import { TaskRepository } from './task.repository';
+import { GetTaskFilterDto } from './dto/get-task-filter.dto';
 
 @Injectable()
 export class TasksService {
-  constructor(
-    private taskRepository: TaskRepository,
-  ) {
-  }
-  // private tasks: Task[] = [];
+  constructor(private taskRepository: TaskRepository) {}
 
-  // getAllTasks(): Task[] {
-  //   return this.tasks;
-  // }
-  //
+  async getTasks(filterDto: GetTaskFilterDto): Promise<Task[]> {
+    return await this.taskRepository.getTasks(filterDto);
+  }
+
   async getTaskById(id: number): Promise<Task> {
     const found = await this.taskRepository.findOne(id);
 
@@ -27,21 +24,13 @@ export class TasksService {
   }
 
   async createTask(createTaskDto: CreateTaskDto): Promise<Task> {
-    const { title, description } = createTaskDto;
-
-    const task = new Task();
-    task.title = title;
-    task.description = description;
-    task.status = TaskStatus.OPEN;
-    await task.save();
-
-    return task;
+    return await this.taskRepository.createTask(createTaskDto);
   }
 
   async deleteTaskById(id: number): Promise<void> {
     const result = await this.taskRepository.delete(id);
 
-    if(result.affected === 0) {
+    if (result.affected === 0) {
       throw new NotFoundException(`Task with ID "${id}" not found`);
     }
   }
@@ -52,19 +41,4 @@ export class TasksService {
     await task.save();
     return task;
   }
-
-  // getTasksWithFilters(filterDto: GetTaskFilterDto): Task[] {
-  //   const { status, search } = filterDto;
-  //   let tasks = this.getAllTasks();
-  //   if (status) {
-  //     tasks = tasks.filter(task => task.status === status);
-  //   }
-  //   if (search) {
-  //     tasks = tasks.filter(
-  //       task =>
-  //         task.title.includes(search) || task.description.includes(search),
-  //     );
-  //   }
-  //   return tasks;
-  // }
 }
